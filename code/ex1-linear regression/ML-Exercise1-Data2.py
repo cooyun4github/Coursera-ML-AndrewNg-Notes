@@ -14,23 +14,32 @@ theta = numpy.zeros((columns-1, 1))
 X = numpy.matrix(X.values)
 y = numpy.matrix(y.values)
 print(X.shape, theta.shape, y.shape)
+print(theta)
 
+def hTheta(X, theta):
+    return X * theta
+
+def error(X, y, theta):
+    return hTheta(X, theta) - y
+
+def partialDerivative(X, y, theta):
+    return X.T * error(X, y, theta) / len(X)
+
+# cost函数只是为了观察cost变化曲线，并不参与梯度下降整个计算过程
 def computeCost(X, y, theta):
     inner = numpy.power(((X * theta) - y), 2)
     return numpy.sum(inner) / (2 * len(X))
 
 def gradientDescent(X, y, theta, alpha, iters):
-    cost = numpy.zeros(iters)
+    costs = numpy.zeros(iters)
     for i in range(iters):
-        theta = theta - (alpha / len(X)) * (X.T * ((X * theta) - y))
-        cost[i] = computeCost(X, y, theta)
-    return theta, cost
+        theta = theta - alpha * partialDerivative(X, y, theta)
+        costs[i] = computeCost(X, y, theta)
+    return theta, costs
 
 iters = 1000
 t, costs = gradientDescent(X, y, theta, 0.01, iters)
 cost = computeCost(X, y, t)
-print(t)
-print(cost)
 
 fig, ax = plt.subplots(figsize=(12,8))
 ax.plot(numpy.arange(iters), costs, 'r')
